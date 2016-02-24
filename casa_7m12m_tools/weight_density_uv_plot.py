@@ -1,5 +1,6 @@
 import numpy as np
 import pylab as pl
+from taskinit import mstool, msmdtool
 
 def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None):
     """
