@@ -3,7 +3,8 @@ import pylab as pl
 from taskinit import mstool, msmdtool
 
 def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None, clear=False,
-                        ignore_flags=False, representative_channel=None):
+                        ignore_flags=False, representative_channel=None,
+                        **kwargs):
     """
     Plot the "weight density" vs uvdist: i.e., the sum of the weights in each
     annular bin divided by the area of that bin
@@ -26,6 +27,10 @@ def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None, clear=False,
     representative_channel : None or int
         A specific channel from which to extract flags.  If left as 'None',
         defaults to the mean frequency
+    kwargs : dict
+        Keyword arguments are passed to msselect (e.g., obsid).  Unfortunately,
+        it seems that msselect will happily ignore just about everything it is
+        given.
     """
 
     if hasattr(spw, '__len__'):
@@ -47,7 +52,11 @@ def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None, clear=False,
 
     myms.open(vis)
     myms.selectinit(0)
-    assert myms.msselect(dict(field=field, spw=reffreq)), "Data selection has failed"
+    selection_dict = dict(field=field, spw=reffreq,)
+    selection_dict.update(kwargs)
+    #print(selection_dict)
+    assert myms.msselect(selection_dict), "Data selection has failed"
+    #print(myms.msselectedindices())
     # select one "representative" channel out of the SPW (because the weights
     # are per SPW, but the flags are per channel)
     assert myms.selectchannel(start=closest_channel, nchan=1, inc=1, width=1), "Channel selection has failed"
