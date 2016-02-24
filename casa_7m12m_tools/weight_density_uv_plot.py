@@ -2,7 +2,8 @@ import numpy as np
 import pylab as pl
 from taskinit import mstool, msmdtool
 
-def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None):
+def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None, clear=False,
+                        ignore_flags=False, representative_channel=None):
     """
     Plot the "weight density" vs uvdist: i.e., the sum of the weights in each
     annular bin divided by the area of that bin
@@ -19,6 +20,12 @@ def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None):
         The number of bins to create
     bins : None or array
         You can specify specific bins to average the weights in
+    ignore_flags : bool
+        Ignore the flags in the file.  Flagged data will be plotted alongside
+        unflagged.
+    representative_channel : None or int
+        A specific channel from which to extract flags.  If left as 'None',
+        defaults to the mean frequency
     """
 
     if hasattr(spw, '__len__'):
@@ -30,24 +37,28 @@ def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None):
 
     reffreq = "{value}{unit}".format(**mymsmd.reffreq(spw)['m0'])
     reffreq = "{0}Hz".format(mymsmd.meanfreq(spw))
-    closest_channel = np.argmin(np.abs(mymsmd.chanfreqs(spw) - mymsmd.meanfreq(spw)))
+    if representative_channel is not None:
+        closest_channel = representative_channel
+    else:
+        closest_channel = np.argmin(np.abs(mymsmd.chanfreqs(spw) - mymsmd.meanfreq(spw)))
     mymsmd.close()
 
     myms = mstool()
 
     myms.open(vis)
     myms.selectinit(0)
-    myms.msselect(dict(field=field, spw=reffreq))
-    myms.selectchannel(start=closest_channel, nchan=1, inc=1, width=1)
-    datadict=myms.getdata(['UVW', 'WEIGHT', 'FLAG'])
+    assert myms.msselect(dict(field=field, spw=reffreq)), "Data selection has failed"
+    # select one "representative" channel out of the SPW (because the weights
+    # are per SPW, but the flags are per channel)
+    assert myms.selectchannel(start=closest_channel, nchan=1, inc=1, width=1), "Channel selection has failed"
+    if ignore_flags:
+        columns = ['UVW', 'WEIGHT']
+    else:
+        columns = ['UVW', 'WEIGHT', 'FLAG']
+    datadict=myms.getdata(columns)
     myms.close()
     wt = datadict['weight']
     uvw = datadict['uvw']
-    # We have exactly one channel (we forced it above) and the second index
-    # should be the channel ID
-    # If the flag shape does not conform to this assumption, we're in trouble
-    flags = datadict['flag'][:,0,:]
-
 
     # calculate the UV distance from the uvw array
     uvd = (uvw[:2,:]**2).sum(axis=0)**0.5
@@ -55,17 +66,24 @@ def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None):
     if bins is None:
         bins = np.linspace(uvd.min(), uvd.max(), nbins)
 
-    if flags.shape != wt.shape:
-        if flags.shape[0] == wt.shape[1]:
-            flags = flags.T
-        else:
-            raise ValueError("Flag shape and weight shape don't match. "
-                             "Flag shape: {0}  Weight shape: {1}".format(
-                                 flags.shape,wt.shape))
 
-    # set weights to zero because we're adding them (this is obviously not right
-    # for many operations, but it is right here!)
-    wt[flags] = 0
+    if not ignore_flags:
+        # We have exactly one channel (we forced it above) and the second index
+        # should be the channel ID
+        # If the flag shape does not conform to this assumption, we're in trouble
+        flags = datadict['flag'][:,0,:]
+
+        if flags.shape != wt.shape:
+            if flags.shape[0] == wt.shape[1]:
+                flags = flags.T
+            else:
+                raise ValueError("Flag shape and weight shape don't match. "
+                                 "Flag shape: {0}  Weight shape: {1}".format(
+                                     flags.shape,wt.shape))
+
+        # set weights to zero because we're adding them (this is obviously not right
+        # for many operations, but it is right here!)
+        wt[flags] = 0
 
     # one plot for each polarization
     h_1 = np.histogram(uvd, bins, weights=wt[0,:])
@@ -76,7 +94,8 @@ def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None):
     # compute the bin area for division below
     bin_area = (bins[1:]**2-bins[:-1]**2)*np.pi
 
-    pl.clf()
+    if clear:
+        pl.clf()
     pl.plot(midbins, h_1[0]/bin_area, drawstyle='steps-mid')
     pl.plot(midbins, h_2[0]/bin_area, drawstyle='steps-mid')
     pl.xlabel("UV Distance")
