@@ -2,9 +2,31 @@ import numpy as np
 import pylab as pl
 
 def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None):
+    """
+    Plot the "weight density" vs uvdist: i.e., the sum of the weights in each
+    annular bin divided by the area of that bin
+
+    Parameters
+    ----------
+    vis : str
+        The .ms table to plot weights from
+    spw : int or str
+        The spectral window to plot.  Only one spectral window should be specified.
+    field : str
+        The field name to plot (if mosaic, make sure it is a name and not a number)
+    nbins : int
+        The number of bins to create
+    bins : None or array
+        You can specify specific bins to average the weights in
+    """
+
+    if hasattr(spw, '__len__'):
+        assert len(spw) == 0, "Only one SPW can be plotted."
+
 
     mymsmd = msmdtool()
     mymsmd.open(vis)
+
     reffreq = "{value}{unit}".format(**mymsmd.reffreq(spw)['m0'])
     reffreq = "{0}Hz".format(mymsmd.meanfreq(spw))
     closest_channel = np.argmin(np.abs(mymsmd.chanfreqs(spw) - mymsmd.meanfreq(spw)))
