@@ -66,8 +66,8 @@ def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None, clear=False,
         columns = ['UVW', 'WEIGHT', 'FLAG']
     datadict=myms.getdata(columns)
     myms.close()
-    wt = datadict['weight']
-    uvw = datadict['uvw']
+    wt = datadict['weight'].squeeze()
+    uvw = datadict['uvw'].squeeze()
 
     # calculate the UV distance from the uvw array
     uvd = (uvw[:2,:]**2).sum(axis=0)**0.5
@@ -80,15 +80,13 @@ def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None, clear=False,
         # We have exactly one channel (we forced it above) and the second index
         # should be the channel ID
         # If the flag shape does not conform to this assumption, we're in trouble
-        flags = datadict['flag'][:,0,:]
+        # squeeze just gets rid of all size=1 dimensions
+        flags = datadict['flag'].squeeze()
 
         if flags.shape != wt.shape:
-            if flags.shape[0] == wt.shape[1]:
-                flags = flags.T
-            else:
-                raise ValueError("Flag shape and weight shape don't match. "
-                                 "Flag shape: {0}  Weight shape: {1}".format(
-                                     flags.shape,wt.shape))
+            raise ValueError("Flag shape and weight shape don't match. "
+                             "Flag shape: {0}  Weight shape: {1}".format(
+                                 flags.shape,wt.shape))
 
         # set weights to zero because we're adding them (this is obviously not right
         # for many operations, but it is right here!)
