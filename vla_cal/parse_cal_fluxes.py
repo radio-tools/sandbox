@@ -7,17 +7,18 @@ def parse_logfile(data):
     if isinstance(data, str):
         # assume it is a filename
         with open(data,'r') as fh:
-            text = fh.read()
+            text = fh.readlines()
     else:
         # try this?
-        text = data.read()
+        text = data.readlines()
 
 
     table = {}
 
     start_recording=False
     for line in text:
-        if "fluxscale::pipeline.hifv.tasks.fluxscale.fluxboot::     Fitting data with power law" in line:
+        if ("fluxscale::pipeline.hifv.tasks.fluxscale.fluxboot::" in line and
+            "Fitting data with power law" in line):
             start_recording=True
 
         if "fitted spectral index & SNR" in line and start_recording:
