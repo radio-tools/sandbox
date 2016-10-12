@@ -52,7 +52,7 @@ def plot_weight_density(vis, spw=0, field='', nbins=50, bins=None, clear=False,
 
     myms.open(vis)
     myms.selectinit(0)
-    selection_dict = dict(field=field, spw=reffreq,)
+    selection_dict = dict(field=field) #, spw=reffreq,)
     selection_dict.update(kwargs)
     #print(selection_dict)
     assert myms.msselect(selection_dict), "Data selection has failed"
