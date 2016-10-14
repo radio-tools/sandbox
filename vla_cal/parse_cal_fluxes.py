@@ -151,8 +151,8 @@ def plot_cal_fluxes(tbl, sourcecenter=None, radius=None):
                    (coordinates.T[1] - sourcecenter[1])**2)**0.5 < radius
 
 
-    pl.figure(1).clf()
-    pl.scatter(coordinates.T[0][matches], coordinates.T[1][matches], s=np.array(meds)[matches]*100)
-    pl.xlabel("RA")
-    pl.ylabel("Dec")
-    pl.savefig("calibrator_positions_zoom.png")
+        pl.figure(1).clf()
+        pl.scatter(coordinates.T[0][matches], coordinates.T[1][matches], s=np.array(meds)[matches]*100)
+        pl.xlabel("RA")
+        pl.ylabel("Dec")
+        pl.savefig("calibrator_positions_zoom.png")

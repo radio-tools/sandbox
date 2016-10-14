@@ -102,3 +102,38 @@ def write_cal_man(outfile='/Users/adam/repos/radio-astro-tools-sandbox/vla_cal/c
 
     calman.sort('RA2000')
     calman.write(outfile, format='ascii.fixed_width')
+
+def plot_cal_fluxes(tbl, sourcecenter=None, radius=None, band='0.7cm Q',
+                    text=False):
+    # ignore dates...
+    
+    import pylab as pl
+    import numpy as np
+
+    coordinates = np.array(list(zip(tbl['RA2000'], tbl['Dec2000'])))
+
+    pl.figure(1).clf()
+    pl.scatter(coordinates.T[0], coordinates.T[1], s=tbl[band+":Flux"]*100)
+    pl.xlabel("RA")
+    pl.ylabel("Dec")
+    pl.savefig("calibrator_positions_{0}.png".format(band))
+
+    if sourcecenter is not None and radius is not None:
+        matches = ((coordinates.T[0] - sourcecenter[0])**2 +
+                   (coordinates.T[1] - sourcecenter[1])**2)**0.5 < radius
+
+        print("{0} matches".format(matches.sum()))
+
+
+        pl.figure(1).clf()
+        pl.scatter(coordinates.T[0][matches], coordinates.T[1][matches],
+                   s=tbl[band+":Flux"][matches]*100)
+        pl.xlabel("RA")
+        pl.ylabel("Dec")
+
+        if text:
+            for row in tbl[matches]:
+                pl.text(row['RA2000'], row['Dec2000'],
+                        row['Source Name'])
+
+        pl.savefig("calibrator_positions_{0}_zoom.png".format(band))
