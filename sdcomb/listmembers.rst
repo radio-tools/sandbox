@@ -10,7 +10,7 @@ Members (as of April 2018)
 +---------------------+-------------------------+---------------------------------+
 |Ed Fomalont          |JAO/NRAO, Chile          |efomalon at nrao.edu             |
 +---------------------+-------------------------+---------------------------------+
-|Adam Ginsburg        |NRAO Jansky fellow, USA  |keflavich at gmail.com           |
+|Adam Ginsburg        |NRAO Jansky fellow, USA  |adam.g.ginsburg at gmail.com     |
 +---------------------+-------------------------+---------------------------------+
 |Daniel Harsono       |Allegro ARC node, Neth.  |harsono at strw.leidenuniv.nl    |
 +---------------------+-------------------------+---------------------------------+
