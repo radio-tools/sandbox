@@ -34,6 +34,8 @@ Members (as of April 2018)
 +---------------------+-------------------------+---------------------------------+
 |Thomas Stanke        |ESO ARC, Germany         |tstanke at eso.org               |
 +---------------------+-------------------------+---------------------------------+
+|Daniel Tafoya        |EA ARC                   |daniel.tafoya at nao.ac.jp       |
++---------------------+-------------------------+---------------------------------+
 |Peter Teuben         |Univ. of Maryland, USA   |teuben at gmail.com              |
 +---------------------+-------------------------+---------------------------------+
 |Ke Wang              |ESO, Germany             |kwang at eso.org                 |
