@@ -7,6 +7,8 @@ of workers.
 Because CASA makes temporary files in the current directory, it may be
 useful to run this script from the same directory as the MS.
 
+Run in a normal python environment.
+
 '''
 
 import os

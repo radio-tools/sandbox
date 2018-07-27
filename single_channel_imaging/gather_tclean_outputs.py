@@ -7,7 +7,7 @@ when gathering results in a cluster environment.
 
 Returns an HDF5 file with the combined table of results.
 
-Can be run in a normal python environment.
+Run in a normal python environment.
 
 Requires numpy and astropy.
 '''

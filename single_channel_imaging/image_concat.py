@@ -1,6 +1,8 @@
 
 '''
 Combine individually-imaged channels into a cube.
+
+Run in CASA.
 '''
 
 import sys

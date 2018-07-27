@@ -10,6 +10,8 @@ from tasks import tclean, tget
 
 '''
 Cleans a single channel given the channel number and a tclean parameter file
+
+Run in a CASA environment.
 '''
 
 chan_num = int(sys.argv[-2])
